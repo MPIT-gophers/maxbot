@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MAX Mini App Debug</title>
+    <script src="https://st.max.ru/js/max-web-app.js"></script>
     <style>
       :root {
         color-scheme: light;
@@ -156,6 +157,10 @@
 
     <script>
       const webApp = window.WebApp && typeof window.WebApp === "object" ? window.WebApp : null;
+      if (webApp && typeof webApp.ready === "function") {
+        webApp.ready();
+      }
+
       const initDataField = document.getElementById("initData");
       const sessionIdField = document.getElementById("sessionId");
       const responsePanel = document.getElementById("responsePanel");
