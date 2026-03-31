@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from typing import Any
 
+import httpx
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -134,9 +135,7 @@ async def healthz() -> dict[str, str]:
 def render_miniapp(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         "miniapp.html",
-        {
-            "request": request,
-        },
+        {"request": request},
     )
 
 
