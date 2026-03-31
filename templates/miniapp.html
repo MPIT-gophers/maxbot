@@ -49,7 +49,6 @@
       }
 
       .auth-card {
-        overflow: hidden;
         border: 1px solid var(--line);
         border-radius: 34px;
         background: var(--panel);
@@ -57,18 +56,10 @@
         box-shadow: var(--shadow);
       }
 
-      .hero {
-        display: grid;
-      }
-
-      @media (min-width: 960px) {
-        .hero {
-          grid-template-columns: minmax(0, 1.02fr) minmax(320px, 0.98fr);
-        }
-      }
-
       .content {
-        padding: 30px 22px 28px;
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 34px 24px 34px;
       }
 
       .badge {
@@ -161,206 +152,29 @@
         display: block;
       }
 
-      .visual {
-        position: relative;
-        min-height: 320px;
-        padding: 24px;
-        background:
-          radial-gradient(circle at top right, rgba(126, 182, 255, 0.26), transparent 28%),
-          linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(233, 244, 255, 0.88));
-        border-top: 1px solid rgba(16, 32, 51, 0.06);
-      }
-
-      @media (min-width: 960px) {
-        .visual {
-          min-height: auto;
-          border-top: 0;
-          border-left: 1px solid rgba(16, 32, 51, 0.06);
+      @media (max-width: 640px) {
+        .content {
+          padding: 28px 18px 28px;
         }
-      }
-
-      .visual-stage {
-        position: relative;
-        display: grid;
-        place-items: center;
-        min-height: 100%;
-      }
-
-      .halo {
-        position: absolute;
-        border-radius: 999px;
-      }
-
-      .halo-a {
-        top: 12px;
-        right: 16px;
-        width: 132px;
-        height: 132px;
-        background: rgba(47, 127, 255, 0.12);
-      }
-
-      .halo-b {
-        bottom: 16px;
-        left: 16px;
-        width: 172px;
-        height: 172px;
-        background: rgba(141, 210, 255, 0.2);
-      }
-
-      .device {
-        position: relative;
-        width: min(100%, 326px);
-        aspect-ratio: 0.79;
-        padding: 16px;
-        border-radius: 34px;
-        background: linear-gradient(180deg, #18385d 0%, #244f82 100%);
-        box-shadow: 0 28px 58px rgba(24, 56, 93, 0.26);
-      }
-
-      .device::before {
-        content: "";
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        width: 38%;
-        height: 22px;
-        border-radius: 999px;
-        background: rgba(7, 21, 38, 0.46);
-        transform: translateX(-50%);
-      }
-
-      .screen {
-        position: relative;
-        height: 100%;
-        overflow: hidden;
-        border-radius: 24px;
-        background:
-          radial-gradient(circle at top left, rgba(130, 191, 255, 0.34), transparent 26%),
-          linear-gradient(180deg, #fbfdff 0%, #edf6ff 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-      }
-
-      .screen-glow {
-        position: absolute;
-        inset: 18px;
-        border-radius: 24px;
-        background: linear-gradient(180deg, rgba(47, 127, 255, 0.06), rgba(47, 127, 255, 0));
-      }
-
-      .orbital {
-        position: absolute;
-        border: 1px solid rgba(47, 127, 255, 0.16);
-        border-radius: 999px;
-      }
-
-      .orbital-a {
-        inset: 44px 36px auto 36px;
-        height: 180px;
-      }
-
-      .orbital-b {
-        inset: auto 34px 46px 34px;
-        height: 144px;
-      }
-
-      .mark {
-        position: absolute;
-        top: 30%;
-        left: 50%;
-        display: grid;
-        place-items: center;
-        width: 112px;
-        height: 112px;
-        border-radius: 30px;
-        background: linear-gradient(135deg, rgba(47, 127, 255, 0.14), rgba(21, 87, 201, 0.2));
-        transform: translate(-50%, -50%);
-        box-shadow: inset 0 0 0 1px rgba(47, 127, 255, 0.12);
-      }
-
-      .mark::before {
-        content: "";
-        width: 52px;
-        height: 52px;
-        border-radius: 18px;
-        background: linear-gradient(135deg, var(--accent), var(--accent-deep));
-        box-shadow: 0 14px 26px rgba(21, 87, 201, 0.22);
-      }
-
-      .mark::after {
-        content: "";
-        position: absolute;
-        width: 18px;
-        height: 18px;
-        border-right: 3px solid #fff;
-        border-bottom: 3px solid #fff;
-        transform: translateY(-2px) rotate(45deg);
-      }
-
-      .sheet {
-        position: absolute;
-        right: 18px;
-        bottom: 18px;
-        left: 18px;
-        padding: 16px 16px 18px;
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.82);
-        border: 1px solid rgba(16, 32, 51, 0.06);
-      }
-
-      .sheet-line {
-        height: 10px;
-        border-radius: 999px;
-        background: rgba(47, 127, 255, 0.12);
-      }
-
-      .sheet-line + .sheet-line {
-        margin-top: 10px;
-      }
-
-      .sheet-line.short {
-        width: 72%;
       }
     </style>
   </head>
   <body>
     <main class="shell">
       <section class="auth-card">
-        <div class="hero">
-          <div class="content">
-            <div class="badge">MPIT 2026 Registration</div>
-            <h1>Вход через MAX</h1>
-            <p class="lead">
-              Подтвердите авторизацию, чтобы продолжить вход. После этого backend завершит сессию и приложение сможет
-              получить токен.
-            </p>
+        <div class="content">
+          <div class="badge">MPIT 2026 Registration</div>
+          <h1>Вход через MAX</h1>
+          <p class="lead">
+            Подтвердите авторизацию, чтобы продолжить вход. После этого backend завершит сессию и приложение сможет
+            получить токен.
+          </p>
 
-            <div class="cta">
-              <button id="completeButton" class="button" type="button">Авторизоваться через MAX</button>
-            </div>
-
-            <div id="errorBox" class="error">Сессия не найдена. Попробуйте еще раз.</div>
+          <div class="cta">
+            <button id="completeButton" class="button" type="button">Авторизоваться через MAX</button>
           </div>
 
-          <aside class="visual" aria-hidden="true">
-            <div class="visual-stage">
-              <div class="halo halo-a"></div>
-              <div class="halo halo-b"></div>
-
-              <div class="device">
-                <div class="screen">
-                  <div class="screen-glow"></div>
-                  <div class="orbital orbital-a"></div>
-                  <div class="orbital orbital-b"></div>
-                  <div class="mark"></div>
-                  <div class="sheet">
-                    <div class="sheet-line"></div>
-                    <div class="sheet-line short"></div>
-                    <div class="sheet-line"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </aside>
+          <div id="errorBox" class="error">Сессия не найдена. Попробуйте еще раз.</div>
         </div>
       </section>
     </main>
