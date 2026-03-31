@@ -10,9 +10,11 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from starlette.requests import Request
+from starlette.staticfiles import StaticFiles
 
 
 BASE_DIR = Path(__file__).resolve().parent
+STATIC_DIR = BASE_DIR / "static"
 load_dotenv(BASE_DIR / ".env")
 
 
@@ -33,6 +35,7 @@ class Settings:
 settings = Settings()
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app = FastAPI(title="MAX Test Bot")
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
 
 class LoginPayload(BaseModel):
