@@ -122,40 +122,58 @@
     <main>
       <section class="card">
         <h1>MAX Mini App Debug</h1>
-        <p>Страница показывает <code>window.WebApp.initData</code> и умеет отправить его в backend login.</p>
-        <p class="meta">Backend login URL: <code>{{ backend_login_url }}</code></p>
+        <p>Страница показывает <code>window.WebApp.initData</code>, читает <code>start_param</code> и завершает mobile auth session.</p>
+        <p class="meta">Complete auth proxy URL: <code>{{ backend_complete_proxy_url }}</code></p>
       </section>
 
       <section class="grid">
         <article class="card">
+          <h2>Session</h2>
+          <p>Эта сессия приходит из <code>?startapp=&lt;session_id&gt;</code> и попадает в <code>start_param</code>.</p>
+          <textarea id="sessionId" readonly></textarea>
+          <div class="actions">
+            <button id="copySessionId" class="secondary" type="button">Copy session_id</button>
+          </div>
+        </article>
+
+        <article class="card">
           <h2>initData</h2>
-          <p>Эта строка нужна для <code>POST /api/v1/auth/max/login</code>.</p>
+          <p>Эта строка нужна для <code>POST /api/v1/auth/max/complete</code>.</p>
           <textarea id="initData" readonly></textarea>
           <div class="actions">
             <button id="copyInitData" class="secondary" type="button">Copy initData</button>
-            <button id="loginButton" type="button">Login in backend</button>
+            <button id="completeButton" type="button">Complete auth</button>
           </div>
         </article>
 
         <article class="card">
           <h2>Backend response</h2>
-          <p>Если backend настроен верно, здесь появится JWT и профиль пользователя.</p>
+          <p>Если backend настроен верно, сессия перейдёт в <code>completed</code>.</p>
           <pre id="responsePanel">Ожидание действия...</pre>
         </article>
       </section>
     </main>
 
     <script>
+      const webApp = window.WebApp && typeof window.WebApp === "object" ? window.WebApp : null;
       const initDataField = document.getElementById("initData");
+      const sessionIdField = document.getElementById("sessionId");
       const responsePanel = document.getElementById("responsePanel");
       const copyButton = document.getElementById("copyInitData");
-      const loginButton = document.getElementById("loginButton");
+      const copySessionButton = document.getElementById("copySessionId");
+      const completeButton = document.getElementById("completeButton");
 
-      const initData = window.WebApp && typeof window.WebApp.initData === "string"
-        ? window.WebApp.initData
+      const initData = webApp && typeof webApp.initData === "string"
+        ? webApp.initData
+        : "";
+      const sessionId = webApp
+        && webApp.initDataUnsafe
+        && typeof webApp.initDataUnsafe.start_param === "string"
+        ? webApp.initDataUnsafe.start_param
         : "";
 
       initDataField.value = initData || "window.WebApp.initData недоступен. Открой страницу именно как mini app внутри MAX.";
+      sessionIdField.value = sessionId || "start_param отсутствует. Открой mini app через deep link со startapp=<session_id>.";
 
       copyButton.addEventListener("click", async () => {
         if (!initData) {
@@ -167,27 +185,49 @@
         responsePanel.textContent = "initData скопирован в буфер обмена.";
       });
 
-      loginButton.addEventListener("click", async () => {
+      copySessionButton.addEventListener("click", async () => {
+        if (!sessionId) {
+          responsePanel.textContent = "session_id отсутствует.";
+          return;
+        }
+
+        await navigator.clipboard.writeText(sessionId);
+        responsePanel.textContent = "session_id скопирован в буфер обмена.";
+      });
+
+      completeButton.addEventListener("click", async () => {
         if (!initData) {
           responsePanel.textContent = "initData отсутствует. Страница открыта вне MAX mini app контекста.";
           return;
         }
 
-        responsePanel.textContent = "Отправка в backend...";
+        if (!sessionId) {
+          responsePanel.textContent = "session_id отсутствует. Mini app должна быть открыта через deep link со startapp=<session_id>.";
+          return;
+        }
+
+        responsePanel.textContent = "Завершение auth session...";
 
         try {
-          const response = await fetch("{{ backend_login_url }}", {
+          const response = await fetch("{{ backend_complete_proxy_url }}", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
+              session_id: sessionId,
               init_data: initData
             })
           });
 
           const text = await response.text();
           responsePanel.textContent = `HTTP ${response.status}\n\n${text}`;
+
+          if (response.ok && webApp && typeof webApp.close === "function") {
+            setTimeout(() => {
+              webApp.close();
+            }, 1200);
+          }
         } catch (error) {
           responsePanel.textContent = `Ошибка запроса: ${error}`;
         }

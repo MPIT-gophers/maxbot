@@ -20,7 +20,10 @@ class Settings:
     def __init__(self) -> None:
         self.max_bot_token = os.getenv("MAX_BOT_TOKEN", "").strip()
         self.max_api_base_url = os.getenv("MAX_API_BASE_URL", "https://platform-api.max.ru").rstrip("/")
-        self.backend_login_url = os.getenv("BACKEND_LOGIN_URL", "http://127.0.0.1:8080/api/v1/auth/max/login").strip()
+        self.backend_complete_url = os.getenv(
+            "BACKEND_COMPLETE_URL",
+            "http://127.0.0.1:8080/api/v1/auth/max/complete",
+        ).strip()
         self.public_base_url = os.getenv("PUBLIC_BASE_URL", "").rstrip("/")
         self.host = os.getenv("HOST", "0.0.0.0")
         self.port = int(os.getenv("PORT", "8090"))
@@ -37,6 +40,11 @@ app = FastAPI(title="MAX Test Bot")
 
 
 class LoginPayload(BaseModel):
+    init_data: str
+
+
+class CompleteAuthPayload(BaseModel):
+    session_id: str
     init_data: str
 
 
@@ -139,7 +147,7 @@ def render_miniapp(request: Request) -> HTMLResponse:
         "miniapp.html",
         {
             "request": request,
-            "backend_login_url": settings.backend_login_url,
+            "backend_complete_proxy_url": "/api/auth/complete",
         },
     )
 
@@ -159,13 +167,12 @@ async def miniapp_slash(request: Request) -> HTMLResponse:
     return render_miniapp(request)
 
 
-@app.post("/api/login")
-async def login(payload: LoginPayload) -> JSONResponse:
+async def proxy_backend_json(url: str, payload: dict[str, Any]) -> JSONResponse:
     async with httpx.AsyncClient(timeout=httpx.Timeout(timeout=20)) as client:
         try:
             response = await client.post(
-                settings.backend_login_url,
-                json={"init_data": payload.init_data},
+                url,
+                json=payload,
                 headers={"Content-Type": "application/json"},
             )
         except httpx.HTTPError as exc:
@@ -176,6 +183,26 @@ async def login(payload: LoginPayload) -> JSONResponse:
         return JSONResponse(status_code=response.status_code, content=response.json())
 
     return JSONResponse(status_code=response.status_code, content={"raw": response.text})
+
+
+@app.post("/api/login")
+async def login(_payload: LoginPayload) -> JSONResponse:
+    return JSONResponse(
+        status_code=410,
+        content={
+            "error": {
+                "message": "legacy endpoint is disabled; use /api/auth/complete with session_id and init_data",
+            }
+        },
+    )
+
+
+@app.post("/api/auth/complete")
+async def complete_auth(payload: CompleteAuthPayload) -> JSONResponse:
+    return await proxy_backend_json(
+        settings.backend_complete_url,
+        {"session_id": payload.session_id, "init_data": payload.init_data},
+    )
 
 
 async def poll_updates_loop(client: MaxBotClient) -> None:
@@ -238,8 +265,8 @@ def build_start_text() -> str:
         "Что дальше:",
         "1. В кабинете MAX привяжите mini app URL к этому боту.",
         f"2. Укажите URL: {settings.public_base_url + '/miniapp' if settings.public_base_url else '<PUBLIC_BASE_URL>/miniapp'}",
-        "3. Откройте mini app из MAX.",
-        "4. На странице mini app нажмите Login in backend.",
+        "3. Мобильное приложение должно открывать MAX deep link вида https://max.ru/<bot>?startapp=<session_id>.",
+        "4. Mini app сама отправит session_id и initData в backend через этот bot-service.",
     ]
     return "\n".join(lines)
 
@@ -248,12 +275,12 @@ def build_default_text(text: str) -> str:
     if text:
         return (
             "Бот работает.\n\n"
-            "Чтобы проверить auth, открой mini app, привязанный к боту в кабинете MAX.\n"
-            "Внутри mini app страница покажет initData и сможет отправить его в backend.\n\n"
+            "Для mobile auth открывай mini app через deep link со startapp=session_id.\n"
+            "Внутри mini app страница покажет initData/start_param и завершит auth в backend.\n\n"
             f"Последнее сообщение: {text}"
         )
 
-    return "Бот работает. Для проверки auth нужен mini app, привязанный к этому боту."
+    return "Бот работает. Для mobile auth нужен mini app, привязанный к этому боту."
 
 
 if __name__ == "__main__":
