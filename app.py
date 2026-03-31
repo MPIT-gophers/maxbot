@@ -3,9 +3,8 @@ import os
 from pathlib import Path
 from typing import Any
 
-import httpx
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -20,10 +19,6 @@ class Settings:
     def __init__(self) -> None:
         self.max_bot_token = os.getenv("MAX_BOT_TOKEN", "").strip()
         self.max_api_base_url = os.getenv("MAX_API_BASE_URL", "https://platform-api.max.ru").rstrip("/")
-        self.backend_complete_url = os.getenv(
-            "BACKEND_COMPLETE_URL",
-            "http://127.0.0.1:8080/api/v1/auth/max/complete",
-        ).strip()
         self.public_base_url = os.getenv("PUBLIC_BASE_URL", "").rstrip("/")
         self.host = os.getenv("HOST", "0.0.0.0")
         self.port = int(os.getenv("PORT", "8090"))
@@ -41,12 +36,6 @@ app = FastAPI(title="MAX Test Bot")
 
 class LoginPayload(BaseModel):
     init_data: str
-
-
-class CompleteAuthPayload(BaseModel):
-    session_id: str
-    init_data: str
-
 
 class MaxBotClient:
     def __init__(self, token: str, api_base_url: str, poll_timeout_seconds: int) -> None:
@@ -147,7 +136,6 @@ def render_miniapp(request: Request) -> HTMLResponse:
         "miniapp.html",
         {
             "request": request,
-            "backend_complete_proxy_url": "/api/auth/complete",
         },
     )
 
@@ -167,41 +155,15 @@ async def miniapp_slash(request: Request) -> HTMLResponse:
     return render_miniapp(request)
 
 
-async def proxy_backend_json(url: str, payload: dict[str, Any]) -> JSONResponse:
-    async with httpx.AsyncClient(timeout=httpx.Timeout(timeout=20)) as client:
-        try:
-            response = await client.post(
-                url,
-                json=payload,
-                headers={"Content-Type": "application/json"},
-            )
-        except httpx.HTTPError as exc:
-            raise HTTPException(status_code=502, detail=f"backend request failed: {exc}") from exc
-
-    content_type = response.headers.get("content-type", "")
-    if "application/json" in content_type:
-        return JSONResponse(status_code=response.status_code, content=response.json())
-
-    return JSONResponse(status_code=response.status_code, content={"raw": response.text})
-
-
 @app.post("/api/login")
 async def login(_payload: LoginPayload) -> JSONResponse:
     return JSONResponse(
         status_code=410,
         content={
             "error": {
-                "message": "legacy endpoint is disabled; use /api/auth/complete with session_id and init_data",
+                "message": "legacy endpoint is disabled; use /api/v1/auth/max/complete directly",
             }
         },
-    )
-
-
-@app.post("/api/auth/complete")
-async def complete_auth(payload: CompleteAuthPayload) -> JSONResponse:
-    return await proxy_backend_json(
-        settings.backend_complete_url,
-        {"session_id": payload.session_id, "init_data": payload.init_data},
     )
 
 

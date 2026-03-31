@@ -8,7 +8,7 @@
 - отвечает на `/start` и любые текстовые сообщения
 - отдаёт тестовую mini app страницу на `/miniapp`
 - показывает `window.WebApp.initData` и `start_param`
-- умеет проксировать завершение auth session в backend `POST /api/v1/auth/max/complete`
+- mini app страница бьёт напрямую в backend `POST /api/v1/auth/max/complete`
 
 ## Что всё равно нужно сделать руками в MAX
 
@@ -76,7 +76,6 @@ curl http://127.0.0.1:8090/healthz
 
 - `MAX_BOT_TOKEN` — токен бота MAX
 - `MAX_API_BASE_URL` — базовый URL Bot API
-- `BACKEND_COMPLETE_URL` — backend endpoint для `POST /api/v1/auth/max/complete`
 - `PUBLIC_BASE_URL` — публичный URL этого сервиса
 - `HOST`, `PORT` — где поднимать FastAPI
 - `POLL_TIMEOUT_SECONDS` — timeout long polling

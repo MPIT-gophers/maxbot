@@ -124,7 +124,7 @@
       <section class="card">
         <h1>MAX Mini App Debug</h1>
         <p>Страница показывает <code>window.WebApp.initData</code>, читает <code>start_param</code> и завершает mobile auth session.</p>
-        <p class="meta">Complete auth proxy URL: <code>{{ backend_complete_proxy_url }}</code></p>
+        <p class="meta">Complete auth URL: <code id="proxyUrl">/api/v1/auth/max/complete</code></p>
       </section>
 
       <section class="grid">
@@ -164,9 +164,13 @@
       const initDataField = document.getElementById("initData");
       const sessionIdField = document.getElementById("sessionId");
       const responsePanel = document.getElementById("responsePanel");
+      const proxyUrlField = document.getElementById("proxyUrl");
       const copyButton = document.getElementById("copyInitData");
       const copySessionButton = document.getElementById("copySessionId");
       const completeButton = document.getElementById("completeButton");
+
+      const completeAuthURL = "/api/v1/auth/max/complete";
+      proxyUrlField.textContent = completeAuthURL;
 
       const initData = webApp && typeof webApp.initData === "string"
         ? webApp.initData
@@ -214,7 +218,7 @@
         responsePanel.textContent = "Завершение auth session...";
 
         try {
-          const response = await fetch("{{ backend_complete_proxy_url }}", {
+          const response = await fetch(completeAuthURL, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
