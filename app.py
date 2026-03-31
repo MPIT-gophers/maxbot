@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import os
 from pathlib import Path
 from typing import Any
@@ -15,6 +16,7 @@ from starlette.staticfiles import StaticFiles
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
+CAT_IMAGE_PATH = STATIC_DIR / "images" / "cat.png"
 load_dotenv(BASE_DIR / ".env")
 
 
@@ -36,6 +38,11 @@ settings = Settings()
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app = FastAPI(title="MAX Test Bot")
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+if CAT_IMAGE_PATH.exists():
+    CAT_IMAGE_DATA_URL = "data:image/png;base64," + base64.b64encode(CAT_IMAGE_PATH.read_bytes()).decode("ascii")
+else:
+    CAT_IMAGE_DATA_URL = ""
 
 
 class LoginPayload(BaseModel):
@@ -138,7 +145,10 @@ async def healthz() -> dict[str, str]:
 def render_miniapp(request: Request) -> HTMLResponse:
     return templates.TemplateResponse(
         "miniapp.html",
-        {"request": request},
+        {
+            "request": request,
+            "cat_image_src": CAT_IMAGE_DATA_URL,
+        },
     )
 
 
