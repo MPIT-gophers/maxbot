@@ -3,155 +3,558 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MAX Mini App Debug</title>
+    <title>Вход через MAX</title>
     <script src="https://st.max.ru/js/max-web-app.js"></script>
     <style>
       :root {
         color-scheme: light;
-        --bg: #f5f2ea;
-        --card: rgba(255, 255, 255, 0.82);
-        --text: #1d1a16;
-        --muted: #665f57;
-        --line: rgba(29, 26, 22, 0.12);
-        --accent: #cb5d2a;
-        --accent-dark: #913d18;
+        --bg: #f2efe8;
+        --paper: rgba(255, 252, 247, 0.88);
+        --paper-strong: #fffaf3;
+        --ink: #171411;
+        --muted: #70675d;
+        --line: rgba(23, 20, 17, 0.1);
+        --accent: #c85b2e;
+        --accent-deep: #8f3815;
+        --accent-soft: rgba(200, 91, 46, 0.14);
+        --ok: #1d7f54;
+        --ok-soft: rgba(29, 127, 84, 0.14);
+        --warn: #8a5a00;
+        --warn-soft: rgba(138, 90, 0, 0.14);
+        --shadow: 0 22px 60px rgba(34, 26, 20, 0.12);
       }
 
       * {
         box-sizing: border-box;
       }
 
+      html,
+      body {
+        min-height: 100%;
+      }
+
       body {
         margin: 0;
-        font-family: "Segoe UI", "SF Pro Display", sans-serif;
-        color: var(--text);
+        font-family: "Manrope", "Segoe UI", sans-serif;
+        color: var(--ink);
         background:
-          radial-gradient(circle at top left, rgba(203, 93, 42, 0.18), transparent 34%),
-          radial-gradient(circle at bottom right, rgba(0, 122, 92, 0.13), transparent 28%),
-          var(--bg);
-        min-height: 100vh;
+          radial-gradient(circle at top left, rgba(200, 91, 46, 0.18), transparent 30%),
+          radial-gradient(circle at bottom right, rgba(28, 118, 103, 0.12), transparent 26%),
+          linear-gradient(180deg, #f5f1ea 0%, #efe9df 100%);
       }
 
-      main {
-        max-width: 920px;
+      .shell {
+        max-width: 1120px;
         margin: 0 auto;
-        padding: 24px 16px 40px;
+        padding: 22px 16px 36px;
       }
 
-      .card {
-        background: var(--card);
-        backdrop-filter: blur(16px);
+      .auth-card {
+        overflow: hidden;
         border: 1px solid var(--line);
-        border-radius: 22px;
-        padding: 18px;
-        box-shadow: 0 14px 36px rgba(29, 26, 22, 0.08);
+        border-radius: 32px;
+        background: var(--paper);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--shadow);
       }
 
-      h1 {
-        margin: 0 0 8px;
-        font-size: 32px;
-        line-height: 1.05;
-      }
-
-      p {
-        margin: 0 0 12px;
-        color: var(--muted);
-      }
-
-      .grid {
+      .hero {
         display: grid;
-        gap: 16px;
-        margin-top: 16px;
       }
 
-      @media (min-width: 880px) {
-        .grid {
-          grid-template-columns: 1fr 1fr;
+      @media (min-width: 960px) {
+        .hero {
+          grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
         }
       }
 
-      textarea,
-      pre {
-        width: 100%;
-        min-height: 220px;
+      .content {
+        padding: 28px 22px 24px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px solid rgba(23, 20, 17, 0.08);
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 5px rgba(200, 91, 46, 0.12);
+      }
+
+      h1 {
         margin: 0;
-        padding: 14px;
+        font-family: "Cormorant Garamond", "Georgia", serif;
+        font-size: clamp(44px, 8vw, 74px);
+        line-height: 0.92;
+        letter-spacing: -0.03em;
+        font-weight: 600;
+      }
+
+      .lead {
+        max-width: 560px;
+        margin: 18px 0 0;
+        font-size: 17px;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 24px 0 0;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      .pill strong {
+        font-weight: 700;
+      }
+
+      .pill-ok {
+        background: var(--ok-soft);
+        color: var(--ok);
+        border-color: rgba(29, 127, 84, 0.15);
+      }
+
+      .pill-warn {
+        background: var(--warn-soft);
+        color: var(--warn);
+        border-color: rgba(138, 90, 0, 0.15);
+      }
+
+      .cta {
+        margin-top: 28px;
+      }
+
+      .button {
+        appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 56px;
+        padding: 0 22px;
+        border: 0;
+        border-radius: 999px;
+        font: inherit;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+      }
+
+      .button:hover {
+        transform: translateY(-1px);
+      }
+
+      .button:disabled {
+        cursor: not-allowed;
+        opacity: 0.52;
+        transform: none;
+      }
+
+      .button-primary {
+        color: #fff;
+        background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+        box-shadow: 0 16px 34px rgba(143, 56, 21, 0.24);
+      }
+
+      .button-secondary {
+        color: var(--ink);
+        background: rgba(255, 255, 255, 0.78);
         border: 1px solid var(--line);
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.84);
-        color: var(--text);
-        overflow: auto;
-        white-space: pre-wrap;
-        word-break: break-word;
-        font: 13px/1.5 "SFMono-Regular", "Consolas", monospace;
       }
 
       .actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 14px;
+        gap: 12px;
+        margin-top: 16px;
       }
 
-      button {
-        appearance: none;
-        border: 0;
-        border-radius: 999px;
-        padding: 12px 16px;
-        font: inherit;
-        cursor: pointer;
-        color: white;
-        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-        box-shadow: 0 10px 24px rgba(145, 61, 24, 0.24);
-      }
-
-      button.secondary {
-        color: var(--text);
-        background: white;
+      .result-card {
+        margin-top: 24px;
+        padding: 16px 16px 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.62);
         border: 1px solid var(--line);
-        box-shadow: none;
       }
 
-      .meta {
-        margin-top: 12px;
+      .result-title {
+        margin: 0 0 8px;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .result-message {
+        margin: 0;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--ink);
+      }
+
+      .result-message.success {
+        color: var(--ok);
+      }
+
+      .result-message.error {
+        color: #9d2f1f;
+      }
+
+      .details {
+        margin-top: 18px;
+        border-top: 1px solid rgba(23, 20, 17, 0.08);
+        padding-top: 18px;
+      }
+
+      details {
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.64);
+        border: 1px solid var(--line);
+      }
+
+      summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 16px 18px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .details-body {
+        display: grid;
+        gap: 14px;
+        padding: 0 18px 18px;
+      }
+
+      .meta-card {
+        padding: 14px;
+        border-radius: 16px;
+        background: rgba(249, 245, 238, 0.84);
+        border: 1px solid rgba(23, 20, 17, 0.06);
+      }
+
+      .meta-card h2 {
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+
+      .meta-card p {
+        margin: 0 0 8px;
         font-size: 13px;
         color: var(--muted);
+      }
+
+      textarea,
+      pre {
+        width: 100%;
+        min-height: 122px;
+        margin: 0;
+        padding: 12px 13px;
+        border: 1px solid rgba(23, 20, 17, 0.08);
+        border-radius: 14px;
+        resize: vertical;
+        overflow: auto;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--ink);
+        white-space: pre-wrap;
+        word-break: break-word;
+        font: 12px/1.55 "IBM Plex Mono", "Consolas", monospace;
+      }
+
+      .meta-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .visual {
+        position: relative;
+        min-height: 320px;
+        padding: 24px;
+        background:
+          radial-gradient(circle at top right, rgba(200, 91, 46, 0.22), transparent 28%),
+          linear-gradient(180deg, rgba(255, 250, 243, 0.92), rgba(244, 236, 225, 0.86));
+        border-top: 1px solid rgba(23, 20, 17, 0.06);
+      }
+
+      @media (min-width: 960px) {
+        .visual {
+          min-height: auto;
+          border-top: 0;
+          border-left: 1px solid rgba(23, 20, 17, 0.06);
+        }
+      }
+
+      .visual-stage {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 100%;
+      }
+
+      .orb {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(2px);
+      }
+
+      .orb-a {
+        top: 12px;
+        right: 18px;
+        width: 130px;
+        height: 130px;
+        background: rgba(200, 91, 46, 0.18);
+      }
+
+      .orb-b {
+        bottom: 16px;
+        left: 12px;
+        width: 164px;
+        height: 164px;
+        background: rgba(30, 124, 108, 0.12);
+      }
+
+      .phone {
+        position: relative;
+        width: min(100%, 320px);
+        aspect-ratio: 0.78;
+        padding: 16px;
+        border-radius: 34px;
+        background: linear-gradient(180deg, #191511 0%, #2c241d 100%);
+        box-shadow: 0 24px 50px rgba(29, 20, 13, 0.26);
+      }
+
+      .phone::before {
+        content: "";
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        width: 36%;
+        height: 22px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.5);
+        transform: translateX(-50%);
+      }
+
+      .screen {
+        height: 100%;
+        border-radius: 24px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at top left, rgba(200, 91, 46, 0.28), transparent 28%),
+          linear-gradient(180deg, #fbf6ef 0%, #f2e8db 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      .screen-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 18px 12px;
+      }
+
+      .screen-pill {
+        width: 72px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(23, 20, 17, 0.12);
+      }
+
+      .screen-dots {
+        display: flex;
+        gap: 6px;
+      }
+
+      .screen-dots span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(23, 20, 17, 0.12);
+      }
+
+      .sheet {
+        margin: 10px 16px 0;
+        padding: 18px;
+        border-radius: 24px 24px 0 0;
+        background: rgba(255, 252, 247, 0.88);
+        border: 1px solid rgba(23, 20, 17, 0.08);
+        border-bottom: 0;
+      }
+
+      .sheet h3 {
+        margin: 0;
+        font-family: "Cormorant Garamond", "Georgia", serif;
+        font-size: 32px;
+        line-height: 0.95;
+      }
+
+      .sheet p {
+        margin: 12px 0 0;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+
+      .sheet-cta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, rgba(200, 91, 46, 0.14), rgba(143, 56, 21, 0.1));
+      }
+
+      .sheet-cta span {
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .sheet-cta strong {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 959px) {
+        .content {
+          padding-bottom: 14px;
+        }
       }
     </style>
   </head>
   <body>
-    <main>
-      <section class="card">
-        <h1>MAX Mini App Debug</h1>
-        <p>Страница показывает <code>window.WebApp.initData</code>, читает <code>start_param</code> и завершает mobile auth session.</p>
-        <p class="meta">Complete auth URL: <code id="proxyUrl">/api/v1/auth/max/complete</code></p>
-      </section>
+    <main class="shell">
+      <section class="auth-card">
+        <div class="hero">
+          <div class="content">
+            <div class="eyebrow">MPIT 2026 Registration</div>
 
-      <section class="grid">
-        <article class="card">
-          <h2>Session</h2>
-          <p>Эта сессия приходит из <code>?startapp=&lt;session_id&gt;</code> и попадает в <code>start_param</code>.</p>
-          <textarea id="sessionId" readonly></textarea>
-          <div class="actions">
-            <button id="copySessionId" class="secondary" type="button">Copy session_id</button>
+            <h1>Вход через MAX</h1>
+            <p class="lead">
+              Подтверди вход в приложении MAX. После авторизации аккаунт будет связан с твоим профилем, и backend
+              завершит сессию входа.
+            </p>
+
+            <div class="status-row">
+              <div class="pill" id="contextStatus">
+                <strong>Проверка контекста…</strong>
+              </div>
+              <div class="pill" id="sessionStatus">
+                <strong>Проверка сессии…</strong>
+              </div>
+            </div>
+
+            <div class="cta">
+              <button id="completeButton" class="button button-primary" type="button">Авторизоваться через MAX</button>
+              <div class="actions">
+                <button id="closeButton" class="button button-secondary" type="button" hidden>Закрыть окно</button>
+              </div>
+            </div>
+
+            <section class="result-card" aria-live="polite">
+              <p class="result-title">Статус</p>
+              <p id="resultMessage" class="result-message">
+                Готово к подтверждению. Если кнопка неактивна, страница открыта вне mini app или без session id.
+              </p>
+            </section>
+
+            <div class="details">
+              <details>
+                <summary>Технические детали</summary>
+                <div class="details-body">
+                  <div class="meta-card">
+                    <h2>Session ID</h2>
+                    <p>Берётся из <code>startapp=&lt;session_id&gt;</code>.</p>
+                    <textarea id="sessionId" readonly></textarea>
+                    <div class="meta-actions">
+                      <button id="copySessionId" class="button button-secondary" type="button">Скопировать session_id</button>
+                    </div>
+                  </div>
+
+                  <div class="meta-card">
+                    <h2>initData</h2>
+                    <p>Эта строка уходит в <code>/api/v1/auth/max/complete</code>.</p>
+                    <textarea id="initData" readonly></textarea>
+                    <div class="meta-actions">
+                      <button id="copyInitData" class="button button-secondary" type="button">Скопировать initData</button>
+                    </div>
+                  </div>
+
+                  <div class="meta-card">
+                    <h2>Ответ backend</h2>
+                    <p>Для ручной отладки, если нужно посмотреть сырой ответ.</p>
+                    <pre id="responsePanel">Ожидание действия…</pre>
+                  </div>
+                </div>
+              </details>
+            </div>
           </div>
-        </article>
 
-        <article class="card">
-          <h2>initData</h2>
-          <p>Эта строка нужна для <code>POST /api/v1/auth/max/complete</code>.</p>
-          <textarea id="initData" readonly></textarea>
-          <div class="actions">
-            <button id="copyInitData" class="secondary" type="button">Copy initData</button>
-            <button id="completeButton" type="button">Complete auth</button>
-          </div>
-        </article>
+          <aside class="visual" aria-hidden="true">
+            <div class="visual-stage">
+              <div class="orb orb-a"></div>
+              <div class="orb orb-b"></div>
 
-        <article class="card">
-          <h2>Backend response</h2>
-          <p>Если backend настроен верно, сессия перейдёт в <code>completed</code>.</p>
-          <pre id="responsePanel">Ожидание действия...</pre>
-        </article>
+              <div class="phone">
+                <div class="screen">
+                  <div class="screen-top">
+                    <div class="screen-pill"></div>
+                    <div class="screen-dots">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+
+                  <div class="sheet">
+                    <h3>MAX<br />Sign-In</h3>
+                    <p>
+                      Один подтверждающий экран. Без паролей, без длинных форм, только короткая проверка mini app
+                      сессии.
+                    </p>
+                    <div class="sheet-cta">
+                      <span>Session linked</span>
+                      <strong>Secure handoff</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
       </section>
     </main>
 
@@ -161,61 +564,91 @@
         webApp.ready();
       }
 
+      const completeButton = document.getElementById("completeButton");
+      const closeButton = document.getElementById("closeButton");
+      const contextStatus = document.getElementById("contextStatus");
+      const sessionStatus = document.getElementById("sessionStatus");
+      const resultMessage = document.getElementById("resultMessage");
+      const responsePanel = document.getElementById("responsePanel");
       const initDataField = document.getElementById("initData");
       const sessionIdField = document.getElementById("sessionId");
-      const responsePanel = document.getElementById("responsePanel");
-      const proxyUrlField = document.getElementById("proxyUrl");
-      const copyButton = document.getElementById("copyInitData");
+      const copyInitButton = document.getElementById("copyInitData");
       const copySessionButton = document.getElementById("copySessionId");
-      const completeButton = document.getElementById("completeButton");
 
       const completeAuthURL = "/api/v1/auth/max/complete";
-      proxyUrlField.textContent = completeAuthURL;
 
-      const initData = webApp && typeof webApp.initData === "string"
-        ? webApp.initData
-        : "";
-      const sessionId = webApp
-        && webApp.initDataUnsafe
-        && typeof webApp.initDataUnsafe.start_param === "string"
+      const initData = webApp && typeof webApp.initData === "string" ? webApp.initData : "";
+      const sessionId = webApp && webApp.initDataUnsafe && typeof webApp.initDataUnsafe.start_param === "string"
         ? webApp.initDataUnsafe.start_param
         : "";
 
       initDataField.value = initData || "window.WebApp.initData недоступен. Открой страницу именно как mini app внутри MAX.";
       sessionIdField.value = sessionId || "start_param отсутствует. Открой mini app через deep link со startapp=<session_id>.";
 
-      copyButton.addEventListener("click", async () => {
+      function setPill(element, kind, html) {
+        element.className = `pill ${kind}`;
+        element.innerHTML = html;
+      }
+
+      if (initData) {
+        setPill(contextStatus, "pill-ok", "<strong>MAX mini app подключён</strong>");
+      } else {
+        setPill(contextStatus, "pill-warn", "<strong>Нет MAX контекста</strong>");
+      }
+
+      if (sessionId) {
+        setPill(sessionStatus, "pill-ok", "<strong>Сессия найдена</strong>");
+      } else {
+        setPill(sessionStatus, "pill-warn", "<strong>Сессия не передана</strong>");
+      }
+
+      completeButton.disabled = !initData || !sessionId;
+
+      function setMessage(text, state = "") {
+        resultMessage.textContent = text;
+        resultMessage.className = state ? `result-message ${state}` : "result-message";
+      }
+
+      copyInitButton.addEventListener("click", async () => {
         if (!initData) {
-          responsePanel.textContent = "initData отсутствует.";
+          setMessage("initData недоступен для копирования.", "error");
           return;
         }
 
         await navigator.clipboard.writeText(initData);
-        responsePanel.textContent = "initData скопирован в буфер обмена.";
+        setMessage("initData скопирован в буфер обмена.");
       });
 
       copySessionButton.addEventListener("click", async () => {
         if (!sessionId) {
-          responsePanel.textContent = "session_id отсутствует.";
+          setMessage("session_id недоступен для копирования.", "error");
           return;
         }
 
         await navigator.clipboard.writeText(sessionId);
-        responsePanel.textContent = "session_id скопирован в буфер обмена.";
+        setMessage("session_id скопирован в буфер обмена.");
+      });
+
+      closeButton.addEventListener("click", () => {
+        if (webApp && typeof webApp.close === "function") {
+          webApp.close();
+        }
       });
 
       completeButton.addEventListener("click", async () => {
         if (!initData) {
-          responsePanel.textContent = "initData отсутствует. Страница открыта вне MAX mini app контекста.";
+          setMessage("MAX context не найден. Открой mini app внутри MAX.", "error");
           return;
         }
 
         if (!sessionId) {
-          responsePanel.textContent = "session_id отсутствует. Mini app должна быть открыта через deep link со startapp=<session_id>.";
+          setMessage("Session ID не найден. Открой mini app через deep link со startapp=<session_id>.", "error");
           return;
         }
 
-        responsePanel.textContent = "Завершение auth session...";
+        completeButton.disabled = true;
+        setMessage("Подтверждаем вход через MAX…");
+        responsePanel.textContent = "Отправка запроса...";
 
         try {
           const response = await fetch(completeAuthURL, {
@@ -232,13 +665,18 @@
           const text = await response.text();
           responsePanel.textContent = `HTTP ${response.status}\n\n${text}`;
 
-          if (response.ok && webApp && typeof webApp.close === "function") {
-            setTimeout(() => {
-              webApp.close();
-            }, 1200);
+          if (!response.ok) {
+            setMessage("Backend не подтвердил авторизацию. Открой технические детали и проверь ответ.", "error");
+            completeButton.disabled = false;
+            return;
           }
+
+          setMessage("Авторизация подтверждена. Можно возвращаться в приложение или проверить status/exchange на backend.", "success");
+          closeButton.hidden = !(webApp && typeof webApp.close === "function");
         } catch (error) {
           responsePanel.textContent = `Ошибка запроса: ${error}`;
+          setMessage("Не удалось связаться с backend.", "error");
+          completeButton.disabled = false;
         }
       });
     </script>
